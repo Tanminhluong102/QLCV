@@ -1,0 +1,155 @@
+<!-- Working version of https://dribbble.com/shots/14552329--Exploration-Task-Management-Dashboard -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div class='app'>
+      <main class='project'>
+        <div class='project-info'>
+          <h1>QUẢN LÝ CÔNG VIỆC</h1>
+          <p class="icon-question">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </p>
+        </div>
+        <div class='project-tasks'>
+          <div class='project-column'>
+            <div class='project-column-heading'>
+              <h2 class='project-column-heading__title'>Quản lý User</h2><button
+                class='project-column-heading__options'><i
+                  class="fas fa-ellipsis-h"></i></button>
+            </div>
+            <a class="project-column_a" href="users.html">
+              <div class='task' draggable='true'>
+                <div class='task__tags'><span
+                    class='task__tag task__tag--copyright'>Danh sách User</span><button
+                    class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
+                <p>Danh sách user</p>
+                <div class='task__stats'>
+                  <span class='task__owner'></span>
+                </div>
+              </div>
+            </a>
+            <!-- <a class="project-column_a" href="users.html">
+            <div class='task' draggable='true'>
+              <div class='task__tags'><span class='task__tag task__tag--design'>Edit User</span><button class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
+              <p>Thêm, sửa, xóa User</p>
+              <div class='task__stats'>
+                <span class='task__owner'></span>
+              </div>
+            </div>
+          </a> -->
+          </div>
+          <div class='project-column'>
+            <div class='project-column-heading'>
+              <h2 class='project-column-heading__title'>Quản lý công việc</h2><button
+                class='project-column-heading__options'><i
+                  class="fas fa-ellipsis-h"></i></button>
+            </div>
+            <a class="project-column_a" href="tasks.html">
+              <div class='task' draggable='true'>
+                <div class='task__tags'><span
+                    class='task__tag task__tag--design'>Danh sách Tasks</span><button
+                    class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
+                <p>Danh sách công việc</p>
+                <div class='task__stats'>
+                  <span class='task__owner'></span>
+                </div>
+              </div>
+            </a>
+
+          </div>
+          <!-- <div class='project-column'>
+          <div class='project-column-heading'>
+            <h2 class='project-column-heading__title'>Gán người thực hiện</h2><button class='project-column-heading__options'><i class="fas fa-ellipsis-h"></i></button>
+          </div>
+          <a class="project-column_a" href="taskassignments.html">
+          <div class='task' draggable='true'>
+            <div class='task__tags'><span class='task__tag task__tag--copyright'>Gán người thực hiện</span><button class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
+            <p>Gán người thực hiện</p>
+            <div class='task__stats'>
+              <span class='task__owner'></span>
+            </div>
+          </div>
+          </a>
+        </div> -->
+          <div class='project-column'>
+            <div class='project-column-heading'>
+              <h2 class='project-column-heading__title'>Theo dõi tiến độ</h2><button
+                class='project-column-heading__options'><i
+                  class="fas fa-ellipsis-h"></i></button>
+            </div>
+            <a class="project-column_a" href="tasksprogress.html">
+              <div class='task' draggable='true'>
+                <div class='task__tags'><span
+                    class='task__tag task__tag--illustration'>Theo dõi tiến độ</span><button
+                    class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
+                <p>Theo dõi tiến độ công việc</p>
+                <div class='task__stats'>
+                  <span class='task__owner'></span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </main>
+      <aside class='task-details'>
+        <div class='tag-progress'>
+          <h2>CÔNG VIỆC</h2>
+          <div class='tag-progress'>
+            <p>
+              Công việc đang thực hiện 
+              <div id = "work_progress" ></div>
+            </p>
+            <progress class="progress progress--copyright" max="8" value="3"> 3
+            </progress>
+          </div>
+          <div class='tag-progress'>
+            <p>
+              Công việc đã Hoàn Thành 
+              <div id="job_progress" ></div>
+            </p>
+            <progress class="progress progress--illustration" max="10" value="6">
+              6 </progress>
+          </div>
+        </aside>
+      </div>
+  <script>
+    const work_progress = document.getElementById("work_progress");
+    const job_progress = document.getElementById("job_progress");
+    function progress(){
+          fetch("http://localhost:5000/tasks/completed", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((progress => {
+            work_progress.innerHTML = `${progress.total - progress.completed} / ${progress.total}`;
+            job_progress.innerHTML = `${progress.completed} / ${progress.total}`;
+
+            const maxWorkProgress = progress.total;
+            const maxJobProgress = progress.total;
+            const valueWorkProgress = progress.total - progress.completed;
+            const valueJobProgress = progress.completed;
+            document.querySelector('.progress.progress--copyright').setAttribute('max', maxWorkProgress);
+            document.querySelector('.progress.progress--copyright').setAttribute('value', valueWorkProgress);
+            document.querySelector('.progress.progress--illustration').setAttribute('max', maxJobProgress);
+            document.querySelector('.progress.progress--illustration').setAttribute('value', valueJobProgress);
+
+          }))
+          .catch((error) => {
+            console.log(error);
+          })
+    }
+    progress();
+
+  </script>
+    </body>
+  </html>

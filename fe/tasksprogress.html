@@ -1,0 +1,130 @@
+<!-- file: tasksprogress.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Theo dõi tiến độ công việc</title>
+    <link rel="stylesheet" href="style_progress.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h3 style="text-align:center">Theo dõi tiến độ công việc</h3>
+      <div id="tasksProgressList">
+        <div class="task">
+          <h2 id="title"></h2>
+          <h4 id="description"></h4>
+          <div class="progress">
+            <div id="status" class="progress-bar" style="width: 0%">0%</div>
+          </div>
+          <p>Thời gian đã dùng: <span id="timeUsed"></span></p>
+          <p>Thời gian còn lại: <span id="timeRemaining"></span></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function formatDuration(seconds) {
+        if (seconds === 0) {
+          return "0 seconds";
+        }
+
+        const timeUnits = [
+          { unit: "day", secondsInUnit: 24 * 60 * 60 },
+          { unit: "hour", secondsInUnit: 60 * 60 },
+          { unit: "minute", secondsInUnit: 60 },
+          { unit: "second", secondsInUnit: 1 },
+        ];
+
+        let remainingSeconds = seconds;
+        let result = "";
+
+        for (
+          let i = 0;
+          i < timeUnits.length && result.split(", ").length < 2;
+          i++
+        ) {
+          const { unit, secondsInUnit } = timeUnits[i];
+          const unitValue = Math.floor(remainingSeconds / secondsInUnit);
+
+          if (unitValue > 0) {
+            remainingSeconds %= secondsInUnit;
+
+            if (result !== "") {
+              result += ", ";
+            }
+
+            result += unitValue + " " + unit;
+            if (unitValue > 1) {
+              result += "s";
+            }
+          }
+        }
+
+        return result;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const task_id = urlParams.get("task_id");
+      if (task_id) {
+        fetch("http://localhost:5000/tasks/" + task_id, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((task) => {
+            document.getElementById("title").innerHTML = task.title;
+            document.getElementById("description").innerHTML = task.description;
+            document.getElementById("status").style.width = task.status + "%";
+            document.getElementById("status").innerHTML = task.status + "%";
+            let createDate = new Date(task.createDate);
+            let deadline = new Date(task.deadline);
+            let timeUsed = formatDuration(
+              Math.floor((Date.now() - createDate) / 1000)
+            );
+            let timeRemaining = formatDuration(
+              Math.floor((deadline - Date.now()) / 1000)
+            );
+            document.getElementById("timeUsed").innerHTML = timeUsed;
+            document.getElementById("timeRemaining").innerHTML = timeRemaining;
+          });
+      } else {
+        fetch("http://localhost:5000/tasks", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((tasksList) => {
+            let tasksProgressList =
+              document.getElementById("tasksProgressList");
+            tasksProgressList.innerHTML = "";
+            tasksList.forEach((task) => {
+              let taskProgress = document.createElement("div");
+              taskProgress.className = "task";
+              taskProgress.innerHTML = `
+            <h2>${task.title}</h2>
+            <h4>${task.description}</h4>
+            <div class="progress">
+              <div class="progress-bar" style="width: ${task.status}%">${
+                task.status
+              }%</div>
+            </div>
+            <p>Thời gian đã dùng: <span>${formatDuration(
+              Math.floor((Date.now() - new Date(task.createDate)) / 1000)
+            )}</span></p>
+            <p>Thời gian còn lại: <span>${formatDuration(
+              Math.floor((new Date(task.deadline) - Date.now()) / 1000)
+            )}</span></p>
+          `;
+              tasksProgressList.appendChild(taskProgress);
+            });
+          });
+      }
+    </script>
+  </body>
+</html>

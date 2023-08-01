@@ -1,0 +1,120 @@
+body{
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1{
+    text-align: center;
+}
+
+#contactTable{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#contactTable th,
+#contactTable td{
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+#contactTable th{
+    background-color: #f2f2f2;
+}
+
+.add-contact-form {
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px solid #9c9090;
+    
+}
+.pageList_icon{
+    margin-bottom: 5px;
+    padding: 4px 8px;
+    margin-top: 10px;
+}
+.add-contact-form input {
+    display: block;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 99%;
+    height: 30px;
+    border: 1px solid #ddd;
+}
+
+.add-contact-form button {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    float: left;
+    margin-top: 20px;
+}
+#show {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    float: right;
+    margin-bottom: 10px; 
+}
+#addBtn_1{
+    margin-bottom: 5px;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    float: left;
+    margin-top: 10px;
+}
+.add-contact-form button:hover {
+    background-color: #45a049;
+}
+
+#contactTable td.actions {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+#contactTable td.actions button {
+    padding: 5px 10px;
+    background-color: #2196F3;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#contactTable td.actions button.edit {
+    background-color: #FFC107;
+}
+
+#contactTable td.actions button.delete {
+    background-color: #F44336;
+}
+
+#contactTable td.actions button:hover {
+    opacity: 0.8;
+}
+.modal-dialog {
+    max-width: 600px;
+  }
+.modal-title {
+    font-weight: bold;
+}
+.modal-body input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;}

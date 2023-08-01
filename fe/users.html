@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-theme.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="style_users.css">
+    <!-- <script src="main.js"></script> -->
+    <title>Document</title>
+</head>
+<body>
+  <h1>Quản lý User</h1>
+
+  <table  id="contactTable" >
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Gender</th>
+        <th>Status</th>
+        <th>Birthday</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    </tbody>
+  </table>
+
+  <div id="pageList"></div>
+
+  <button id="adduser" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+    Add User
+  </button>
+  <!-- The Modal -->
+  <div class="modal" id="addModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Create User</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <input type="text" placeholder="Name" id="name">
+            <input type="text" placeholder="Phone" id="phone">
+            <input type="text" placeholder="Email" id="email">
+            <input type="text" placeholder="Address" id="address">
+            <input type="text" placeholder="Gender" id="gender">
+            <input type="text" placeholder="Status" id="status">
+            <input type="text" placeholder="Birthday" id="birthday">
+          </div>
+          
+          <!-- Modal footer -->
+          <div class="modal-footer">
+          <button class="btn btn-primary" id="addBtn" onclick="add()">Add</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="editModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Edit User</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+          <input type="hidden" id="editId">
+          <input type="text" placeholder="Name" id="editName">
+          <input type="text" placeholder="Phone" id="editPhone">
+          <input type="text" placeholder="Email" id="editEmail">
+          <input type="text" placeholder="Address" id="editAddress">
+          <input type="text" placeholder="Gender" id="editGender">
+          <input type="text" placeholder="Status" id="editStatus">
+          <input type="text" placeholder="Birthday" id="editBirthday">
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button class="btn btn-primary" id="saveBtn" onclick="saveChanges()">Save</button> 
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <script>
+    var data = [];
+    var page = 1;
+    var addBtn = document.getElementById('addBtn');
+    var adduser = document.getElementById('adduser');
+    var contactTable = document.getElementById('contactTable');
+
+    function fetchData() { 
+        fetch("http://localhost:5000/users",{
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json"
+          },
+
+      })
+      .then(response => response.json())
+      .then(dataFromServer => {
+          data = dataFromServer;
+          render();
+          let pageList = document.getElementById('pageList');
+          let pages = Math.ceil(data.length/10);
+          for (let i = 0; i < pages; i++) {
+            pageList.innerHTML += `<button class= "pageList_icon" onclick="page=${i+1};render()">${i+1}</button>`
+          }
+      })
+      .catch(error => {
+          console.error('Fetch error:', error);
+      });
+    }
+    fetchData();
+
+    // code add form html using fecth
+    function add(){
+        var name = document.getElementById('name').value;
+        var phone = document.getElementById('phone').value;
+        var email = document.getElementById('email').value;
+        var address = document.getElementById('address').value;
+        var gender = document.getElementById('gender').value;
+        var status = document.getElementById('status').value;
+        var birthday = document.getElementById('birthday').value;
+
+
+        console.log('name', name);
+        console.log('phone', phone);
+        console.log('email', email);
+        console.log('address', address);
+        console.log('gender', gender);
+        console.log('status', status);
+        console.log('birthday', birthday);
+
+        if (!name || !phone || !email || !address || !gender || !status || !birthday) {
+
+          alert("Vui lòng nhập đầy đủ thông tin.");
+        return; // Ngăn không thêm liên hệ nếu không đủ thông tin
+        }
+
+        var item = {
+          name : name,
+          phone : phone,
+          email : email,
+          address : address,
+          gender : gender,
+          status : status,
+          birthday : birthday
+        }
+        fetch("http://localhost:5000/users/createUser",{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(item)
+        })
+        .then(response => response.json()
+        )
+        .then(dataFromServer => {
+                const idFromServer = dataFromServer.Id;
+                item.id = idFromServer; // Gán giá trị id từ server vào trường Id của đối tượng item
+                // Tiếp tục thêm item mới vào mảng data
+                data.push(item);
+                render();
+                clear();
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+
+        }
+        
+    function render(){
+      table = `<tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Gender</th>
+        <th>Status</th>
+        <th>Birthday</th>
+        <th>Actions</th>
+      </tr>`
+      
+      let start = 10*(page - 1);
+      let end = Math.min(10*page, data.length);
+      for(let i = start; i < end; i++) {
+        const datetime = new Date(data[i].birthday);
+        const date = datetime.getDate();
+        const month = datetime.getMonth() + 1;
+        const year = datetime.getFullYear();
+        const birthday = date + '/' + month + '/' + year;
+        data[i].birthday = birthday;
+        table += `<tr>
+        <th>${data[i].id}</th>
+        <th>${data[i].name}</th>
+        <th>${data[i].phone}</th>
+        <th>${data[i].email}</th>
+        <th>${data[i].address}</th>
+        <th>${data[i].gender}</th>
+        <th>${data[i].status}</th>
+        <th>${data[i].birthday}</th> 
+        <th>
+          <button style = "background-color:yellow" class="edit" onclick="editItem(${i})">Edit</button>
+          <button style = "background-color:red" class="delete" onclick="deleteItem(${i})">Delete</button>
+        </th>
+        </tr>`
+      }
+      document.getElementById('contactTable').innerHTML = table;
+
+    }
+    function deleteItem(index) {
+        let user = data[index];
+        if(confirm(`Are you sure you want to delete ${user.name}?`)){
+          fetch("http://localhost:5000/users/delete/"+ user.id,{
+            method: 'POST',
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
+          .then(response => response.json())
+          .catch(error => {
+          console.error('Fetch error:', error);
+        });
+        location.reload();
+      }
+    }
+    function editItem(index) {
+      let user = data[index];
+      document.getElementById('editId').value = user.id;
+      document.getElementById('editName').value = user.name;
+      document.getElementById('editPhone').value = user.phone;
+      document.getElementById('editEmail').value = user.email;
+      document.getElementById('editAddress').value = user.address;
+      document.getElementById('editGender').value = user.gender;
+      document.getElementById('editStatus').value = user.status;
+      document.getElementById('editBirthday').value = user.birthday;
+      $('#editModal').modal('show');
+      
+    }
+    function clear() {
+      // document.getElementById('id').value = '';
+      document.getElementById('name').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById('gender').value = '';
+      document.getElementById('status').value = '';
+      document.getElementById('birthday').value = '';
+    }
+    function saveChanges(){
+      let id = document.getElementById('editId').value;
+      let name = document.getElementById('editName').value;
+      let phone = document.getElementById('editPhone').value;
+      let email = document.getElementById('editEmail').value;
+      let address = document.getElementById('editAddress').value;
+      let gender = document.getElementById('editGender').value;
+      let status = document.getElementById('editStatus').value;
+      let birthday = document.getElementById('editBirthday').value;
+      // giờ muốn lấy user id tương tự như mấy thằng này thì làm như nào, code
+      const item = {
+        name: name,
+        phone: phone,
+        email: email,
+        address: address,
+        gender: gender,
+        status: status,
+        birthday: birthday
+      }
+      const jsData = JSON.stringify(item);
+      fetch("http://localhost:5000/users/editUser/" + id,{
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body : jsData
+      })
+      .then(response => response.json())
+      .then(dataFromServer => {
+        if(dataFromServer.Error === 0){// vì sao cái thằng Error nó lại kahsc 0? bawfng
+          alert("succsess")// vì sao nó không hiện
+        }
+      })
+      .catch(error => {
+          console.error('Fetch error:', error);
+      });
+
+    }
+</script><!-- Link to Bootstrap JS (and jQuery) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

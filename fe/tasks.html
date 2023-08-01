@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Thêm liên kết JS của Bootstrap (tùy chọn) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- import datepicker -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="style_users.css">
+    <!-- <script src="main.js"></script> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/rangeslider.js/dist/rangeslider.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Quản lý Tasks</h1>
+    <div id="tasksList" style="display: none;"></div>
+    <table  id="contactTable" >
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Deadline</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned_to</th>
+            <th>createDate</th>
+            <th>updateDate</th>
+            <th>Actions</th>
+            <th>Tiến độ</th>
+
+        </tr>
+        </thead>
+        </tbody>
+    </table>
+    <div id="pageList"></div>
+    
+    <button id="adduser" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+        Add Tasks
+    </button>
+    <div class="modal" id="addModal">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+            <h4 class="modal-title">Create Tasks</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <label for="title">Title</label>
+                <input type="text" placeholder="Title" id="title">
+                <label for="description">Description</label>
+                <input type="text" placeholder="Description" id="description">
+                <label for="deadline">Deadline</label>
+                <input data-provide="datepicker" id="deadline" autocomplete="off" placeholder="yyyy/mm/dd" data-date-format="yyyy/mm/dd">
+                <label for="priority">Priority</label>
+                <input type="text" placeholder="Priority" id="priority">
+                <label for="status">Status</label>
+                <input type="range" min="0" max="100" value="0" step="1" id="status" class="seekable-progress">
+                <label for="assigned_to">Assigned_to</label>
+                <select name="" id="assigned_to" class="form-control"></select>
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+            <button class="btn btn-primary" id="addBtn" onclick="add()">Add</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="editModal">
+        <div class="modal-dialog">
+        <div class="modal-content">
+    
+            <!-- Modal Header -->
+            <div class="modal-header">
+            <h4 class="modal-title">Edit Tasks</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+    
+            <!-- Modal body -->
+            <div class="modal-body">
+              <input type="hidden" id="editId">
+              <label for="title">Title</label>
+              <input type="text" placeholder="Title" id="editTitle">
+              <label for="description">Description</label>
+              <input type="text" placeholder="Description" id="editDescription">
+              <label for="deadline">Deadline</label>
+              <input data-provide="datepicker" id="editDeadline" autocomplete="off" data-date-format="yyyy/mm/dd">
+              <label for="priority">Priority</label>
+              <input type="text" placeholder="Priority" id="editPriority">
+              <label for="status">Status</label>
+              <input type="text" placeholder="Status" id="editStatus">
+              <label for="assigned_to">Assigned_to</label>
+              <select name="" id="editAssigned_to" class="form-control"></select>
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+            <button class="btn btn-primary" id="saveBtn" onclick="saveChanges()">Save</button> 
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+    
+        </div>
+        </div>
+    </div>
+
+  <script>
+    var data = [];
+    var page = 1;
+    var addBtn = document.getElementById('addBtn');
+    var adduser = document.getElementById('adduser');
+    var contactTable = document.getElementById('contactTable');
+    
+    function fetchData() { 
+        fetch("http://localhost:5000/tasks",{
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json"
+          },
+
+      })
+      .then(response => response.json())
+      .then(dataFromServer => {
+          data = dataFromServer;
+          render();
+          let pageList = document.getElementById('pageList');
+          let pages = Math.ceil(data.length/10);
+          for (let i = 0; i < pages; i++) {
+            pageList.innerHTML += `<button class= "pageList_icon" onclick="page=${i+1};render()">${i+1}</button>`
+          }
+      })
+      .catch(error => {
+          console.error('Fetch error:', error);
+      });
+    }
+    fetchData();
+    function getUsers() {
+        fetch("http://localhost:5000/users",{
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json"
+          },
+
+      })
+      .then(response => response.json())
+      .then(dataFromServer => {
+        let assigned_to = document.getElementById('assigned_to');
+        let editAssigned_to = document.getElementById('editAssigned_to');
+        for (let i = 0; i < dataFromServer.length; i++) {
+            assigned_to.innerHTML += `<option value="${dataFromServer[i].id}">${dataFromServer[i].name}</option>`
+            editAssigned_to.innerHTML += `<option value="${dataFromServer[i].id}">${dataFromServer[i].name}</option>`
+        }
+      })
+      .catch(error => {
+          console.error('Fetch error:', error);
+      });
+    }
+    getUsers();
+    function add(){
+        var title = document.getElementById('title').value;
+        var description = document.getElementById('description').value;
+        var deadline = document.getElementById('deadline').value;
+        var priority = document.getElementById('priority').value;
+        var status = document.getElementById('status').value;
+        var assigned_to = document.getElementById('assigned_to').value;
+        
+        if (!title || !description || !deadline || !priority || !status || !assigned_to) {
+            alert("Vui lòng nhập đầy đủ thông tin.");
+        return; // Prevent adding a task if all fields are not filled
+        }
+
+        var item = {
+            title: title,
+            description: description,
+            deadline: deadline,
+            priority: priority,
+            status: status,
+            assigned_to: assigned_to
+        };
+        fetch("http://localhost:5000/tasks/createTasks",{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(item)
+        })
+        .then(response => response.json()
+        )
+        .then(dataFromServer => {
+                const idFromServer = dataFromServer.Id;
+                item.id = idFromServer; // Gán giá trị id từ server vào trường Id của đối tượng item
+                // Tiếp tục thêm item mới vào mảng data
+                item.createDate = new Date();
+                item.updateDate = new Date();
+                item.assigned_to_name = document.getElementById('assigned_to').options[document.getElementById('assigned_to').selectedIndex].text;
+                data.push(item);
+                render();
+                clear();
+                $('#addModal').modal('hide');
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+
+        }
+   
+    function render(){
+      let tasksListDiv = document.getElementById('tasksList');
+      tasksListDiv.textContent = JSON.stringify(data);
+
+      table = `<tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Deadline</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Assigned_to</th>
+        <th>createDate</th>
+        <th>updateDate</th>
+        <th>Actions</th>
+      </tr>`
+
+      let start = 10*(page - 1);
+      let end = Math.min(10*page, data.length);
+      for(let i = start; i < end; i++) {
+        let deadline = new Date(data[i].deadline);
+        deadline = `${deadline.getFullYear()}/${deadline.getMonth()+1}/${deadline.getDate()}`;
+        let createDate = new Date(data[i].createDate);
+        createDate = `${createDate.getFullYear()}/${createDate.getMonth()+1}/${createDate.getDate()}`;
+        let updateDate = new Date(data[i].updateDate);
+        updateDate = `${updateDate.getFullYear()}/${updateDate.getMonth()+1}/${updateDate.getDate()}`;
+
+        const taskName = data[i].title;
+    const statusPercentage = data[i].status;
+    const createDate_task = data[i].createDate; // Ngày tạo công việc
+    const deadline_task = data[i].deadline; // Hạn chót công việc
+    const tasksProgressURL = `tasksprogress.html?taskName=${encodeURIComponent(taskName)}&statusPercentage=${statusPercentage}&createDate=${createDate_task}&deadline=${deadline_task}`;
+          table += `<tr>
+        <th>${data[i].id}</th>
+        <th>${data[i].title}</th>
+        <th>${data[i].description}</th>
+        <th>${deadline}</th>
+        <th>${data[i].priority}</th>
+        <th>${data[i].status}</th>
+        <th>${data[i].assigned_to_name}</th>
+        <th>${createDate}</th>
+        <th>${updateDate}</th>
+        <th>
+          <button style = "background-color:yellow" class="edit" onclick="editItem(${i})">Edit</button>
+          <button style = "background-color:red" class="delete" onclick="deleteItem(${i})">Delete</button>
+        </th>
+
+        </tr>`
+      }
+      document.getElementById('contactTable').innerHTML = table;
+
+    }
+    function deleteItem(index) {
+        let tasks = data[index];
+        if(confirm(`Are you sure you want to delete ${tasks.name}?`)){
+          fetch("http://localhost:5000/tasks/delete/"+ tasks.id,{
+            method: 'POST',
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
+          .then(response => response.json())
+          .catch(error => {
+          console.error('Fetch error:', error);
+        });
+        location.reload();
+      }
+    }
+    function editItem(index) {
+        let tasks = data[index];
+        document.getElementById('editId').value = tasks.id;
+        document.getElementById('editTitle').value = tasks.title;
+        document.getElementById('editDescription').value = tasks.description;
+        let deadline = new Date(tasks.deadline);
+        deadline = `${deadline.getFullYear()}-${deadline.getMonth()+1}-${deadline.getDate()}`;
+        document.getElementById('editDeadline').value = deadline;
+        document.getElementById('editPriority').value = tasks.priority;
+        document.getElementById('editStatus').value = tasks.status;
+        document.getElementById('editAssigned_to').value = tasks.assigned_to;
+        
+      $('#editModal').modal('show');
+        
+    }
+
+    function clear() {
+        document.getElementById('title').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('deadline').value = '';
+        document.getElementById('priority').value = '';
+        document.getElementById('status').value = '';
+        document.getElementById('assigned_to').value = '';
+        document.getElementById('createDate').value = '';
+        document.getElementById('updateDate').value = '';
+
+    }
+    function saveChanges(){
+        let id = document.getElementById('editId').value;
+        let title = document.getElementById('editTitle').value;
+        let description = document.getElementById('editDescription').value;
+        let deadline = document.getElementById('editDeadline').value;
+        let priority = document.getElementById('editPriority').value;
+        let status = document.getElementById('editStatus').value;
+        let assigned_to = document.getElementById('editAssigned_to').value;
+
+      const item = {
+        title: title,
+        description: description,
+        deadline: deadline,
+        priority: priority,
+        status: status,
+        assigned_to: assigned_to
+      }
+      const jsData = JSON.stringify(item);
+      fetch("http://localhost:5000/tasks/editTasks/" + id,{
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body : jsData
+      })
+      .then(response => response.json())
+      .then(dataFromServer => {
+        if(dataFromServer.Error === 0){
+          alert("succsess");
+          location.reload();
+        }
+      })
+      .catch(error => {
+          console.error('Fetch error:', error);
+      });
+
+    }
+    
+
+  </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/rangeslider.js/dist/rangeslider.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+</body>
+</html>

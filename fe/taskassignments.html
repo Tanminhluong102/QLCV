@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gán công việc</title>
+  <!-- Liên kết đến tệp CSS riêng -->
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <!-- Hoặc nếu bạn muốn sử dụng Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <h3>Gán công việc cho thành viên</h3>
+    <form id="assignForm">
+      <div class="form-group">
+        <label for="taskId">Chọn công việc:</label>
+        <select class="form-control" id="taskId">
+          <!-- Hiển thị danh sách công việc từ API -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="assigneeId">Chọn thành viên:</label>
+        <select class="form-control" id="assigneeId">
+          <!-- Hiển thị danh sách thành viên từ API -->
+        </select>
+      </div>
+      <button type="button" class="btn btn-primary" id="assignBtn">Gán công việc</button>
+    </form>
+  </div>
+  <script>
+    var tasksData = [];
+    var assigneesData = [];
+
+    // Lấy danh sách công việc từ API và hiển thị vào dropdown
+    fetch('http://localhost:5000/assignments/tasks', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(tasks => {
+      tasksData = tasks;
+      var taskSelect = document.getElementById('taskId');
+      tasks.forEach(task => {
+        var option = document.createElement('option');
+        option.value = task.id;
+        option.text = task.title;
+        taskSelect.appendChild(option);
+      });
+    });
+
+    // Lấy danh sách thành viên từ API và hiển thị vào dropdown
+    fetch('http://localhost:5000/assignments/users', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(assignees => {
+      assigneesData = assignees;
+      var assigneeSelect = document.getElementById('assigneeId');
+      assignees.forEach(assignee => {
+        var option = document.createElement('option');
+        option.value = assignee.id;
+        option.text = assignee.name;
+        assigneeSelect.appendChild(option);
+      });
+    });
+
+    // Lắng nghe sự kiện click của nút "Gán công việc"
+    var assignBtn = document.getElementById('assignBtn');
+    assignBtn.addEventListener('click', function() {
+      var selectedTaskId = document.getElementById('taskId').value;
+      var selectedAssigneeId = document.getElementById('assigneeId').value;
+      // Tìm thông tin công việc và thành viên đã chọn
+      var selectedTask = tasksData.find(tasks => tasks.id === parseInt(selectedTaskId));
+      var selectedAssignee = assigneesData.find(assignee => assignee.id === parseInt(selectedAssigneeId));
+      // Gán thông tin thành viên cho công việc và cập nhật thông tin lên server
+      selectedTask.assigned_to = selectedAssignee;
+      console.log(selectedTask);
+      // Gửi yêu cầu POST để cập nhật thông tin công việc
+      fetch(`http://localhost:5000/assignments/editTasks/${selectedTaskId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(selectedTask)
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log(result); // Hiển thị thông báo kết quả cập nhật
+      })
+      .catch(error => {
+        console.error('Đã xảy ra lỗi khi cập nhật công việc:', error);
+      });
+    });
+  </script>
+</body>
+</html>
