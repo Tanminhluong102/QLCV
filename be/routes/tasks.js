@@ -12,7 +12,7 @@ router.get('/', function (req, res) {
 
 
 router.get('/completed', function (req, res) {
-    let query = `SELECT (SELECT COUNT(*) FROM tasks WHERE tasks.status = 100) as completed, (SELECT COUNT(*) FROM tasks) as total;`;
+    let query = `SELECT (SELECT COUNT(*) FROM tasks WHERE tasks.progress = 100) as completed, (SELECT COUNT(*) FROM tasks) as total;`;
     database.query(query, function (error, data) {
         res.send(data[0]);
     }); 
@@ -21,9 +21,9 @@ router.get('/completed', function (req, res) {
 
 
 router.post('/createTasks', (req, res) => {
-    const {title, description, deadline, priority, status, assigned_to, createDate, updateDate } = req.body;
-    const query = `INSERT INTO tasks (title, description, deadline, priority, status, assigned_to) 
-            VALUES ("${title}", "${description}", "${deadline}" ,"${priority}", "${status}", "${assigned_to}")`;
+    const {title, description, deadline, priority,assigned_to} = req.body;
+    const query = `INSERT INTO tasks (title, description, deadline, priority, progress, status, assigned_to) 
+            VALUES ("${title}", "${description}", "${deadline}" ,"${priority}", 0 , "Ready", "${assigned_to}")`;
     database.query(query, function (error, data) {
         if (error) {
             console.log(error);
@@ -39,13 +39,14 @@ router.post('/createTasks', (req, res) => {
 
 router.post('/editTasks/:id', (req, res) => {
     let id = req.params.id;
-    const { title, description, deadline, priority, status, assigned_to} = req.body;
+    const { title, description, deadline, priority,progress, status, assigned_to} = req.body;
     const query =`UPDATE tasks 
                     SET 
                     title = "${title}",
                     description = "${description}",
                     deadline = "${deadline}",
                     priority = "${priority}",
+                    progress = "${progress}",
                     status = "${status}",
                     assigned_to = "${assigned_to}",
                     updateDate = now()

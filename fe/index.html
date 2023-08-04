@@ -7,112 +7,81 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
   </head>
   <body>
     <div class='app'>
+      <nav class='navigation'>
+        <ul>
+          <li><a href="index.html">Trang chủ</a></li>
+          <li><a href="users2.html">Quản lý User</a></li>
+          <li><a href="tasks2.html">Quản lý công việc</a></li>
+          <!-- <li><a href="tasksprogress.html">Theo dõi tiến độ</a></li> -->
+          <div class="logout-icon">
+            <a href="login.html" title="Logout">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+        </ul>
+
+      </nav>
       <main class='project'>
         <div class='project-info'>
-          <h1>QUẢN LÝ CÔNG VIỆC</h1>
+          <h1>THEO DÕI TIẾN ĐỘ</h1>
           <p class="icon-question">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </p>
         </div>
         <div class='project-tasks'>
-          <div class='project-column'>
+          <div class='project-column' id="taskReadyColumn">
             <div class='project-column-heading'>
-              <h2 class='project-column-heading__title'>Quản lý User</h2><button
+              <h2 class='project-column-heading__title'>Task Ready</h2><button
                 class='project-column-heading__options'><i
                   class="fas fa-ellipsis-h"></i></button>
             </div>
-            <a class="project-column_a" href="users.html">
-              <div class='task' draggable='true'>
-                <div class='task__tags'><span
-                    class='task__tag task__tag--copyright'>Danh sách User</span><button
-                    class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
-                <p>Danh sách user</p>
-                <div class='task__stats'>
-                  <span class='task__owner'></span>
-                </div>
-              </div>
-            </a>
-            <!-- <a class="project-column_a" href="users.html">
-            <div class='task' draggable='true'>
-              <div class='task__tags'><span class='task__tag task__tag--design'>Edit User</span><button class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
-              <p>Thêm, sửa, xóa User</p>
-              <div class='task__stats'>
-                <span class='task__owner'></span>
-              </div>
-            </div>
-          </a> -->
           </div>
-          <div class='project-column'>
+          <div class='project-column' id="taskInProgressColumn">
             <div class='project-column-heading'>
-              <h2 class='project-column-heading__title'>Quản lý công việc</h2><button
+              <h2 class='project-column-heading__title'>In Progress</h2><button
                 class='project-column-heading__options'><i
                   class="fas fa-ellipsis-h"></i></button>
             </div>
-            <a class="project-column_a" href="tasks.html">
-              <div class='task' draggable='true'>
-                <div class='task__tags'><span
-                    class='task__tag task__tag--design'>Danh sách Tasks</span><button
-                    class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
-                <p>Danh sách công việc</p>
-                <div class='task__stats'>
-                  <span class='task__owner'></span>
-                </div>
-              </div>
-            </a>
-
           </div>
-          <!-- <div class='project-column'>
-          <div class='project-column-heading'>
-            <h2 class='project-column-heading__title'>Gán người thực hiện</h2><button class='project-column-heading__options'><i class="fas fa-ellipsis-h"></i></button>
-          </div>
-          <a class="project-column_a" href="taskassignments.html">
-          <div class='task' draggable='true'>
-            <div class='task__tags'><span class='task__tag task__tag--copyright'>Gán người thực hiện</span><button class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
-            <p>Gán người thực hiện</p>
-            <div class='task__stats'>
-              <span class='task__owner'></span>
-            </div>
-          </div>
-          </a>
-        </div> -->
-          <div class='project-column'>
+          <div class='project-column' id="taskNeedsReviewColumn">
             <div class='project-column-heading'>
-              <h2 class='project-column-heading__title'>Theo dõi tiến độ</h2><button
-                class='project-column-heading__options'><i
-                  class="fas fa-ellipsis-h"></i></button>
+              <h2 class='project-column-heading__title'>Needs Review</h2>
+              <button class='project-column-heading__options'>
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
             </div>
-            <a class="project-column_a" href="tasksprogress.html">
-              <div class='task' draggable='true'>
-                <div class='task__tags'><span
-                    class='task__tag task__tag--illustration'>Theo dõi tiến độ</span><button
-                    class='task__options'><i class="fas fa-ellipsis-h"></i></button></div>
-                <p>Theo dõi tiến độ công việc</p>
-                <div class='task__stats'>
-                  <span class='task__owner'></span>
-                </div>
-              </div>
-            </a>
+          </div>
+          <div class='project-column' id="taskDoneColumn">
+            <div class='project-column-heading'>
+              <h2 class='project-column-heading__title'>Done</h2>
+              <button
+                class='project-column-heading__options'><i
+                  class="fas fa-ellipsis-h"></i>
+              </button>
+            </div>
           </div>
         </div>
       </main>
       <aside class='task-details'>
         <div class='tag-progress'>
-          <h2>CÔNG VIỆC</h2>
+          <h2>Task Progress</h2>
           <div class='tag-progress'>
             <p>
-              Công việc đang thực hiện 
-              <div id = "work_progress" ></div>
+              Công việc đang thực hiện
+              <div id="work_progress"></div>
             </p>
             <progress class="progress progress--copyright" max="8" value="3"> 3
             </progress>
           </div>
           <div class='tag-progress'>
             <p>
-              Công việc đã Hoàn Thành 
-              <div id="job_progress" ></div>
+              Công việc đã Hoàn Thành
+              <div id="job_progress"></div>
             </p>
             <progress class="progress progress--illustration" max="10" value="6">
               6 </progress>
@@ -120,6 +89,39 @@
         </aside>
       </div>
   <script>
+    const taskDOMItem = (id, title, description, deadline, priority, progress, status, assigned_to, createDate, updateDate, assigned_to_name) => {
+        // <div class='task' draggable='true'>
+        //       <div class='task__tags'>
+        //         <h2 id="title" class='task__tag task__tag--copyright'></h2>
+        //         <div class="progress">
+        //           <div id="progress" class="progress-bar" style="width: 0%">0%</div>
+        //         </div>
+        //       </div>
+        //       <p>Thời gian đã dùng: <span id="timeUsed"></span></p>
+        //       <p>Thời gian còn lại: <span id="timeRemaining"></span></p>
+        //       <div class='task__stats'>
+        //         <span class='task__owner'></span>
+        //       </div>
+        //     </div>
+        let task = document.createElement('div');
+        task.className = 'task';
+        task.id = id;
+        task.draggable = true;
+        let timeUsed = formatDuration((new Date() - new Date(createDate)) / 1000);
+        let timeRemaining = formatDuration((new Date(deadline) - new Date()) / 1000);
+        task.innerHTML = `
+            <div class='task__tags'>
+            <h2 id="title" class='task__tag task__tag--${priority}'>${title}</h2>
+            <div class="progress">
+                <div id="progress" class="progress-bar" style="width: ${progress}%">${progress}%</div>
+            </div>
+            </div>
+            <p>Thời gian đã dùng: <span id="timeUsed">${timeUsed}</span></p>
+            <p>Thời gian còn lại: <span id="timeRemaining">${timeRemaining}</span></p>
+            <p>Người phụ trách: <span id="assigned_to">${assigned_to_name}</span></p>
+        `;
+        return task;
+    }
     const work_progress = document.getElementById("work_progress");
     const job_progress = document.getElementById("job_progress");
     function progress(){
@@ -149,6 +151,74 @@
           })
     }
     progress();
+
+    function formatDuration(seconds) {
+        if (seconds === 0) {
+          return "0 seconds";
+        }
+
+        const timeUnits = [
+          { unit: "day", secondsInUnit: 24 * 60 * 60 },
+          { unit: "hour", secondsInUnit: 60 * 60 },
+          { unit: "minute", secondsInUnit: 60 },
+          { unit: "second", secondsInUnit: 1 },
+        ];
+
+        let remainingSeconds = seconds;
+        let result = "";
+
+        for (
+          let i = 0;
+          i < timeUnits.length && result.split(", ").length < 2;
+          i++
+        ) {
+          const { unit, secondsInUnit } = timeUnits[i];
+          const unitValue = Math.floor(remainingSeconds / secondsInUnit);
+
+          if (unitValue > 0) {
+            remainingSeconds %= secondsInUnit;
+
+            if (result !== "") {
+              result += ", ";
+            }
+
+            result += unitValue + " " + unit;
+            if (unitValue > 1) {
+              result += "s";
+            }
+          }
+        }
+
+        return result;
+      }
+
+      fetch("http://localhost:5000/tasks", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((tasks) => {
+          tasks.forEach((task) => {
+            const taskDOM = taskDOMItem(task.id, task.title, task.description, task.deadline, task.priority, task.progress, task.status, task.assigned_to, task.createDate, task.updateDate, task.assigned_to_name);
+            if(task.status == "Ready"){
+              document.getElementById("taskReadyColumn").appendChild(taskDOM);
+            }
+            if(task.status == "Progress"){
+              document.getElementById("taskInProgressColumn").appendChild(taskDOM);
+            }
+            if(task.status == "Review"){
+              document.getElementById("taskNeedsReviewColumn").appendChild(taskDOM);
+            }
+            if(task.status == "Done"){
+              document.getElementById("taskDoneColumn").appendChild(taskDOM);
+            }
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
   </script>
     </body>

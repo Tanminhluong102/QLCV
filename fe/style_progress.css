@@ -1,7 +1,7 @@
 /* style_users.css */
 body {
-  padding: 20px;
   font-family: Arial, sans-serif;
+  background-color: #ceecfd;
 }
 .task {
   margin-bottom: 20px;
@@ -66,5 +66,58 @@ table th {
 @media (max-width: 767px) {
   .table-responsive {
       overflow-x: auto;
+  }
+}
+
+/* Navigation Bar Styles */
+.navigation {
+  background-color: #65ecca;
+  padding: 1rem;
+  height: 50px;
+  margin-bottom: 1rem;
+}
+
+.navigation ul {
+  display: flex;
+  list-style: none;
+  justify-content: center;
+}
+
+.navigation li {
+  margin: 0 1rem;
+}
+
+.navigation a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+
+}
+
+.navigation a:hover {
+  background-color: var(--purple);
+  color: var(--white);
+  text-decoration: none;
+
+}
+
+/* Active link style */
+.navigation a.active {
+  background-color: var(--purple);
+  color: var(--white);
+}
+
+/* Responsive Layout */
+@media only screen and (max-width: 768px) {
+  .navigation ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navigation li {
+    margin: 1rem 0;
   }
 }

@@ -1,6 +1,7 @@
 body{
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0 20px 20px 20px;
+    background-color: #ebf0f7;
 }
 
 h1{
@@ -21,13 +22,62 @@ h1{
 
 #contactTable th{
     background-color: #f2f2f2;
-}
+    font-weight: 700;
 
+}
+.icon_btn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+}
+.Show {
+    margin-bottom: 5px;
+}
+#paginationInfo {
+    text-align: left;
+}
+  
+#pageNavigation {
+    text-align: right;
+}
+/* Custom CSS for modal layout */
+.modal-body .form-row {
+    margin-bottom: 10px;
+}
+.modal-body .form-group {
+    margin-bottom: 0;
+}
+.progress-dropdown {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+}
+.priority-dropdown {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+}
 .add-contact-form {
     margin-top: 20px;
     padding: 10px;
     border: 2px solid #9c9090;
     
+}
+.edit-button i {
+    color: white; /* Thay đổi màu biểu tượng thành màu trắng */
+  }
+  
+  /* CSS cho biểu tượng xóa (delete) */
+.delete-button i {
+    color: white; /* Thay đổi màu biểu tượng thành màu trắng */
+}
+.edit_button i {
+    color: white; /* Thay đổi màu biểu tượng thành màu trắng */
+  }
+  
+  /* CSS cho biểu tượng xóa (delete) */
+.delete_button i {
+    color: white; /* Thay đổi màu biểu tượng thành màu trắng */
 }
 .pageList_icon{
     margin-bottom: 5px;
@@ -51,6 +101,12 @@ h1{
     cursor: pointer;
     float: left;
     margin-top: 20px;
+}
+#contactTable td.actions button.edit {
+    background-color: #668bbb;
+}
+#contactTable td.actions button.delete {
+    background-color: #f44336;
 }
 #show {
     padding: 8px 16px;
@@ -118,3 +174,52 @@ h1{
     display: flex;
     justify-content: flex-end;
     gap: 10px;}
+
+    /* Navigation Bar Styles */
+.navigation {
+    background-color: var(--header);
+    /* padding-right: 20px; */
+  }
+  
+  .navigation ul {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    background-color: #ceecfd;
+    padding: 15px;
+  }
+  
+  .navigation li {
+    margin: 0 1rem;
+  }
+  
+  .navigation a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navigation a:hover {
+    background-color: #65ecca;
+    color: var(--white);
+  }
+  .navigation a.active {
+    background-color: #65ecca;
+    color: var(--white);
+  }
+
+  /* Responsive Layout */
+  @media only screen and (max-width: 768px) {
+    .navigation ul {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .navigation li {
+      margin: 1rem 0;
+    }
+  }
+  
