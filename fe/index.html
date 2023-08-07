@@ -202,16 +202,16 @@
         .then((tasks) => {
           tasks.forEach((task) => {
             const taskDOM = taskDOMItem(task.id, task.title, task.description, task.deadline, task.priority, task.progress, task.status, task.assigned_to, task.createDate, task.updateDate, task.assigned_to_name);
-            if(task.status == "ready"){
+            if(task.status == "Ready"){
               document.getElementById("taskReadyColumn").appendChild(taskDOM);
             }
-            if(task.status == "progress"){
+            if(task.status == "Progress"){
               document.getElementById("taskInProgressColumn").appendChild(taskDOM);
             }
-            if(task.status == "review"){
+            if(task.status == "Review"){
               document.getElementById("taskNeedsReviewColumn").appendChild(taskDOM);
             }
-            if(task.status == "done"){
+            if(task.status == "Done"){
               document.getElementById("taskDoneColumn").appendChild(taskDOM);
             }
           });
