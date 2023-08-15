@@ -56,38 +56,58 @@
         </div>
         <div class="test">
           <div class='test-tasks'>
-            <div class="test-column" id="taskReadyColumn">
-              <h3>Ready</h3>
-              <p id="readyTasksCount"></p>
-              <p>Tasks count</p>
+            <div class="test-row" >
+              <div class="test-column" id="taskReadyColumn">
+                <h3>Ready</h3>
+                <p style="color: #fe00e9" id="readyTasksCount"></p>
+              </div>
+              <div style="background-color: #ff9cf7;" class="test-name">
+                <p>Tasks count</p>
+              </div>
             </div>
           </div>
           <div class='test-tasks'>
+            <div class="test-row" >
             <div class="test-column"  id="taskInProgressColumn">
               <h3>Incomplete tasks</h3>
-              <p id="incompleteTasksCount"></p>
+              <p style="color: #5f68ee" id="incompleteTasksCount"></p>
+            </div>
+            <div style="background-color: #dadcf8;" class="test-name">
               <p>Tasks count</p>
             </div>
           </div>
+          </div>
           <div class='test-tasks'>
-            <div class="test-column" id="taskDoneColumn">
-              <h3>Completed tasks</h3>
-              <p id="completedTasksCount"></p>
-              <p>Tasks count</p>
+            <div class="test-row" >
+              <div class="test-column" id="taskDoneColumn">
+                <h3>Completed tasks</h3>
+                <p style="color: #50f176" id="completedTasksCount"></p>
+              </div>
+              <div style="background-color: #d7f0dd;" class="test-name">
+                <p>Tasks count</p>
+              </div>
             </div>
           </div>
           <div class='test-tasks'>
-            <div class="test-column">
-              <h3>Overdue tasks</h3>
-              <p id="overdueTasksCount"></p>
-              <p>Tasks count</p>
-            </div>
+            <div class="test-row" >
+              <div class="test-column">
+                <h3>Overdue tasks</h3>
+                <p style="color: #00fddf" id="overdueTasksCount"></p>
+              </div>
+              <div style="background-color: #30f9e1;" class="test-name">
+                <p>Tasks count</p>
+              </div>
+              </div>
           </div>
           <div class='test-tasks'>
+            <div class="test-row" >
             <div class="test-column">
               <h3>Total tasks</h3>
-              <p id="totalTasksCount"></p>
+              <p style="color: #0a6bfc" id="totalTasksCount"></p>
+            </div>
+            <div class="test-name">
               <p>Tasks count</p>
+            </div>
             </div>
           </div>
         </div>
@@ -309,7 +329,7 @@
             document.getElementById("incompleteTasksCount").innerHTML = data.Progress + data.Review;
             document.getElementById("completedTasksCount").innerHTML = data.Done;
             document.getElementById("overdueTasksCount").innerHTML = data.Overdue;
-            document.getElementById("totalTasksCount").innerHTML = data.Ready + data.Progress +data.Review + data.Done + data.Overdue;
+            document.getElementById("totalTasksCount").innerHTML = data.Ready + data.Progress + data.Review +  data.Done + data.Overdue;
             const values = [data.Ready, data.Progress, data.Review, data.Done, data.Overdue];
             // Create and render the bar chart
             new Chart(ctx, {
@@ -320,7 +340,7 @@
                         label: 'Task Management',
                         data: values,
                         borderWidth: 1,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(107, 196, 133, 0.5)', 'rgba(255, 228, 133, 0.5)','rgba(129, 207, 224, 0.5)', 'rgba(255, 153, 102, 0.5)','rgba(255, 255, 102, 0.5)', 'rgba(103, 184, 104, 0.5)'],
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderRadius: 10,
                     }]
@@ -372,7 +392,7 @@
                     labels: jobNames,
                     datasets: [{
                         data: percentages,
-                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)'],
+                        backgroundColor: ['rgba(138, 43, 226, 0.5)','rgba(107, 196, 133, 0.5)','rgba(54, 162, 235, 0.5)', 'rgba(129, 207, 224, 0.5)', 'rgba(255, 153, 102, 0.5)','rgba(255, 255, 102, 0.5)', 'rgba(103, 184, 104, 0.5)', 'rgba(255, 228, 133, 0.5)'],
                         borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
                         borderWidth: 1,
                     }],
