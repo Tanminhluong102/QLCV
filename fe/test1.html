@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels"></script>
+    <style>
+        #charts-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        #myChart,
+        #priorityChartContainer {
+            width: 48%;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="charts-container">
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
+        <div id="priorityChartContainer">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+   
+    <script>
+        const ctx = document.getElementById('myChart');
+        const priorityChartCanvas = document.getElementById('priorityChart');
+
+        // Fetch data for the bar chart
+        fetch('http://localhost:5000/tasks/getStatus/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json())
+        .then(data => {
+            // Process data for the bar chart
+            const labels = [];
+            const values = [];
+            for (let i = 0; i < data.length; i++) {
+                let number = data[i].num;
+                let status = data[i].status;
+                labels.push(status);
+                values.push(number);
+            }
+
+            // Create and render the bar chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Số lượng công việc',
+                        data: values,
+                        borderWidth: 1,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderRadius: 10,
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value, index, values) {
+                                    return Math.floor(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
+        // Fetch data for the doughnut chart
+        fetch('http://localhost:5000/tasks/getPriority/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json())
+        .then(data => {
+            // Process data for the doughnut chart
+            let total = 0;
+            let jobNames = [];
+            let percentages = [];
+            for (let i = 0; i < data.length; i++) {
+                let number = data[i].num;
+                let priority = data[i].priority;
+                total += number;
+                jobNames.push(priority);
+                percentages.push(number);
+            }
+            const percentageData = percentages.map(percent => ((percent / total) * 100).toFixed(2) + '%');
+
+            // Create and render the doughnut chart
+            new Chart(priorityChartCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: jobNames,
+                    datasets: [{
+                        data: percentages,
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)'],
+                        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    cutoutPercentage: 60,
+                    plugins: {
+                        legend: {
+                            display: true,
+                        },
+                        title: {
+                            display: true,
+                            text: 'Job Priority Chart',
+                        },
+                        datalabels: {
+                            display: true,
+                            formatter: (value, context) => {
+                                const percent = percentageData[context.dataIndex];
+                                return `${context.chart.data.labels[context.dataIndex]}: ${value} (${percent})`;
+                            },
+                            color: '#333',
+                        },
+                    },
+                },
+            });
+        }); 
+    </script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
@@ -9,6 +10,26 @@
     <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+<style>
+  #charts-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+#myChart,
+#priorityChartContainer {
+  width: 48%;
+  height: 400px;
+  margin-bottom: 20px;
+}
+#priorityChartContainer {
+  display: block;
+  box-sizing: border-box;
+  height: 400px;
+  width: 400px;
+}
+</style>
   </head>
   <body>
     <div class='app'>
@@ -33,12 +54,51 @@
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </p>
         </div>
-        <div class='project-tasks'>
+        <div class="test">
+          <div class='test-tasks'>
+            <div class="test-column" id="taskReadyColumn">
+              <h3>Ready</h3>
+              <p id="readyTasksCount"></p>
+              <p>Tasks count</p>
+            </div>
+          </div>
+          <div class='test-tasks'>
+            <div class="test-column"  id="taskInProgressColumn">
+              <h3>Incomplete tasks</h3>
+              <p id="incompleteTasksCount"></p>
+              <p>Tasks count</p>
+            </div>
+          </div>
+          <div class='test-tasks'>
+            <div class="test-column" id="taskDoneColumn">
+              <h3>Completed tasks</h3>
+              <p id="completedTasksCount"></p>
+              <p>Tasks count</p>
+            </div>
+          </div>
+          <div class='test-tasks'>
+            <div class="test-column">
+              <h3>Overdue tasks</h3>
+              <p id="overdueTasksCount"></p>
+              <p>Tasks count</p>
+            </div>
+          </div>
+          <div class='test-tasks'>
+            <div class="test-column">
+              <h3>Total tasks</h3>
+              <p id="totalTasksCount"></p>
+              <p>Tasks count</p>
+            </div>
+          </div>
+        </div>
+        <!-- <div class='project-tasks'>
           <div class='project-column' id="taskReadyColumn">
             <div class='project-column-heading'>
-              <h2 class='project-column-heading__title'>Task Ready</h2><button
+              <h2 class='project-column-heading__title'>Task Ready</h2>
+              <button
                 class='project-column-heading__options'><i
-                  class="fas fa-ellipsis-h"></i></button>
+                  class="fas fa-ellipsis-h"></i>
+                </button>
             </div>
           </div>
           <div class='project-column' id="taskInProgressColumn">
@@ -65,7 +125,16 @@
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
+        <!-- chart -->
+        <div id="charts-container">
+          <div>
+              <canvas id="myChart"></canvas>
+          </div>
+          <div id="priorityChartContainer">
+              <canvas id="priorityChart"></canvas>
+          </div>
+      </div>
       </main>
       <aside class='task-details'>
         <div class='tag-progress'>
@@ -86,9 +155,14 @@
             <progress class="progress progress--illustration" max="10" value="6">
               6 </progress>
           </div>
-        </aside>
-      </div>
+        </div>
+      </aside>
+            
+    </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels"></script>
   <script>
+
     const taskDOMItem = (id, title, description, deadline, priority, progress, status, assigned_to, createDate, updateDate, assigned_to_name) => {
         // <div class='task' draggable='true'>
         //       <div class='task__tags'>
@@ -200,26 +274,131 @@
       })
         .then((response) => response.json())
         .then((tasks) => {
-          tasks.forEach((task) => {
-            const taskDOM = taskDOMItem(task.id, task.title, task.description, task.deadline, task.priority, task.progress, task.status, task.assigned_to, task.createDate, task.updateDate, task.assigned_to_name);
-            if(task.status == "Ready"){
-              document.getElementById("taskReadyColumn").appendChild(taskDOM);
-            }
-            if(task.status == "Progress"){
-              document.getElementById("taskInProgressColumn").appendChild(taskDOM);
-            }
-            if(task.status == "Review"){
-              document.getElementById("taskNeedsReviewColumn").appendChild(taskDOM);
-            }
-            if(task.status == "Done"){
-              document.getElementById("taskDoneColumn").appendChild(taskDOM);
-            }
-          });
+          // tasks.forEach((task) => {
+          //   const taskDOM = taskDOMItem(task.id, task.title, task.description, task.deadline, task.priority, task.progress, task.status, task.assigned_to, task.createDate, task.updateDate, task.assigned_to_name);
+          //   if(task.status == "Ready"){
+          //     document.getElementById("taskReadyColumn").appendChild(taskDOM);
+          //   }
+          //   if(task.status == "Progress"){
+          //     document.getElementById("taskInProgressColumn").appendChild(taskDOM);
+          //   }
+          //   if(task.status == "Review"){
+          //     document.getElementById("taskNeedsReviewColumn").appendChild(taskDOM);
+          //   }
+          //   if(task.status == "Done"){
+          //     document.getElementById("taskDoneColumn").appendChild(taskDOM);
+          //   }
+          // });
         })
         .catch((error) => {
           console.log(error);
         });
+        const ctx = document.getElementById('myChart');
+        const priorityChartCanvas = document.getElementById('priorityChart');
 
+        // Fetch data for the bar chart
+        fetch('http://localhost:5000/tasks/getStatus/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json())
+        .then(data => {
+            // Process data for the bar chart
+            document.getElementById("readyTasksCount").innerHTML = data.Ready;
+            document.getElementById("incompleteTasksCount").innerHTML = data.Progress + data.Review;
+            document.getElementById("completedTasksCount").innerHTML = data.Done;
+            document.getElementById("overdueTasksCount").innerHTML = data.Overdue;
+            document.getElementById("totalTasksCount").innerHTML = data.Ready + data.Progress +data.Review + data.Done + data.Overdue;
+            const values = [data.Ready, data.Progress, data.Review, data.Done, data.Overdue];
+            // Create and render the bar chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Ready", "In Progress", "Review", "Done", "Overdue"],
+                    datasets: [{
+                        label: 'Task Management',
+                        data: values,
+                        borderWidth: 1,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderRadius: 10,
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value, index, values) {
+                                    return Math.floor(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
+        // Fetch data for the doughnut chart
+        fetch('http://localhost:5000/tasks/getPriority/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json())
+        .then(data => {
+            // Process data for the doughnut chart
+            let total = 0;
+            let jobNames = [];
+            let percentages = [];
+            for (let i = 0; i < data.length; i++) {
+                let number = data[i].num;
+                let priority = data[i].priority;
+                total += number;
+                jobNames.push(priority);
+                percentages.push(number);
+            }
+            const percentageData = percentages.map(percent => ((percent / total) * 100).toFixed(2) + '%');
+
+            // Create and render the doughnut chart
+            new Chart(priorityChartCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: jobNames,
+                    datasets: [{
+                        data: percentages,
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)'],
+                        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    cutoutPercentage: 60,
+                    plugins: {
+                        legend: {
+                            display: true,
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tasks Priority',
+                        },
+                        datalabels: {
+                            display: true,
+                            formatter: (value, context) => {
+                                const percent = percentageData[context.dataIndex];
+                                return `${context.chart.data.labels[context.dataIndex]}: ${value} (${percent})`;
+                            },
+                            color: '#333',
+                        },
+                    },
+                },
+            });
+        });
   </script>
     </body>
   </html>

@@ -9,8 +9,30 @@ router.get('/', function (req, res) {
         res.send(data);
     });
 }); 
+router.get('/getStatus', function (req, res) {
+    let query = `select count(*) as num,
+    case
+        when completedDate > deadline then 'Overdue'
+        when status <> 'Done' and now() > deadline then 'Overdue'
+        else status
+    end as type
+    from tasks
+    group by type;`;
+    database.query(query, function (error, data) {
+        let result = {Overdue:0, Progress:0, Ready:0, Done:0, Review:0};
+        data.forEach(element => {
+            result[element.type] = element.num;
+        });
+        res.send(result);
+    });
+});
 
-
+router.get('/getPriority', function (req, res) {
+    let query = `select count(*) as num,priority from tasks group by priority;`;
+    database.query(query, function (error, data) {
+        res.send(data);
+    });
+});
 router.get('/completed', function (req, res) {
     let query = `SELECT (SELECT COUNT(*) FROM tasks WHERE tasks.progress = 100) as completed, (SELECT COUNT(*) FROM tasks) as total;`;
     database.query(query, function (error, data) {

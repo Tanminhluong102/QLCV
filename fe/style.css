@@ -31,7 +31,35 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+.test {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 100px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+.test-column {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  height: 115px;
+  width: 195px;
+}
 
+.test-column h3 {
+  margin-top: 0;
+}
+
+.test-column p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #666;
+}
 h1 {
   font-size: 30px;
 }
